@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="jumbotron">
+    <h1>{{ page_title }}</h1>
+    <p class="lead">Track your favorite stocks and monitor market trends</p>
+    
+    <form method="GET" action="{% url 'search_stocks' %}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search by symbol or company name">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <h2>Top Stocks</h2>
+        <div class="stock-list">
+            {% if stocks %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Company</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stock in stocks %}
+                        <tr>
+                            <td>{{ stock.symbol }}</td>
+                            <td>{{ stock.name }}</td>
+                            <td>${{ stock.current_price }}</td>
+                            <td>
+                                <a href="{% url 'stock_detail' stock.symbol %}" class="btn btn-sm btn-info">
+                                    View Details
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No stocks available to display.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <h2>Market Overview</h2>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Market Indices</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">S&P 500: 4,735.42 (+0.8%)</li>
+                    <li class="list-group-item">Dow Jones: 37,863.80 (+0.6%)</li>
+                    <li class="list-group-item">NASDAQ: 16,382.31 (+1.2%)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

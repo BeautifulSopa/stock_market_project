@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="stock-details">
+    <h1>{{ stock.name }} ({{ stock.symbol }})</h1>
+    <div class="stock-price">
+        <h2>${{ stock.current_price }}</h2>
+        <p>Last updated: {{ stock.last_updated }}</p>
+    </div>
+    
+    <div class="stock-actions">
+        {% if request.user.is_authenticated %}
+            {% if stock in request.user.userprofile.favorite_stocks.all %}
+                <a href="{% url 'remove_from_favorites' stock.symbol %}" class="btn btn-danger">
+                    Remove from Favorites
+                </a>
+            {% else %}
+                <a href="{% url 'add_to_favorites' stock.symbol %}" class="btn btn-primary">
+                    Add to Favorites
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+    
+    <div class="stock-chart">
+        <h3>Price History (Last 30 Days)</h3>
+        <canvas id="priceChart"></canvas>
+    </div>
+    
+    <div class="stock-history">
+        <h3>Historical Data</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Open</th>
+                    <th>Close</th>
+                    <th>High</th>
+                    <th>Low</th>
+                    <th>Volume</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td>{{ item.date }}</td>
+                    <td>${{ item.open_price }}</td>
+                    <td>${{ item.close_price }}</td>
+                    <td>${{ item.high }}</td>
+                    <td>${{ item.low }}</td>
+                    <td>{{ item.volume }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Chart.js code to render the stock price chart
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    const priceChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_dates|safe }},
+            datasets: [{
+                label: '{{ stock.symbol }} Price',
+                data: {{ chart_prices|safe }},
+                borderColor: 'rgba(75, 192, 192, 1)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

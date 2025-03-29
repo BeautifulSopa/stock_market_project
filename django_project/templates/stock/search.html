@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="search-results">
+    <h1>Search Results for "{{ query }}"</h1>
+    
+    <form method="GET" action="{% url 'search_stocks' %}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search by symbol or company name" value="{{ query }}">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+    
+    {% if stocks %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Company Name</th>
+                    <th>Current Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in stocks %}
+                <tr>
+                    <td>{{ stock.symbol }}</td>
+                    <td>{{ stock.name }}</td>
+                    <td>${{ stock.current_price }}</td>
+                    <td>
+                        <a href="{% url 'stock_detail' stock.symbol %}" class="btn btn-sm btn-info">
+                            View Details
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No stocks found matching your search.</p>
+    {% endif %}
+</div>
+{% endblock %}
